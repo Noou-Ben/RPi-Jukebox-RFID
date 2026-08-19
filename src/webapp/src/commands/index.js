@@ -308,6 +308,14 @@ const commands = {
     method: 'sync_change_on_rfid_scan',
     argKeys: ['option']
   },
+
+  // YouTube
+  youtube_download: {
+    _package: 'youtube',
+    plugin: 'ctrl',
+    method: 'download',
+    argKeys: ['url', 'folder'],
+  },
 };
 
 export default commands;
