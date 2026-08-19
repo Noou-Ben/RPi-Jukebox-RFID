@@ -160,6 +160,7 @@
         "upload": "Upload",
         "upload-files": "Upload files",
         "upload-folders": "Upload folders",
+        "download-youtube": "Download from YouTube",
         "create-folder": "New folder",
         "select": "Select",
         "select-item": "Select {{name}}",
@@ -192,6 +193,22 @@
             "queued": "Waiting",
             "complete": "Uploaded",
             "cancelled": "Cancelled"
+          }
+        },
+        "youtube-dialog": {
+          "title": "Download from YouTube",
+          "description": "Paste a link to a YouTube video or playlist. Its audio will be downloaded into this folder.",
+          "url-label": "YouTube URL",
+          "url-placeholder": "https://www.youtube.com/watch?v=...",
+          "confirm": "Download",
+          "download-another": "Download another",
+          "generic-error": "The YouTube download failed.",
+          "status": {
+            "submitting": "Starting download…",
+            "preparing": "Fetching video information…",
+            "downloading": "Downloading: {{percent}}%",
+            "converting": "Converting audio…",
+            "complete": "Download complete"
           }
         },
         "errors": {

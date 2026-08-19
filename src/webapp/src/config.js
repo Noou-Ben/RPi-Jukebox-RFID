@@ -8,6 +8,7 @@ const SUBSCRIPTIONS = [
   'core.started_at',
   'host.timer.cputemp',
   'host.temperature.cpu',
+  'library.youtube.progress',
   'playerstatus',
   'rfid.card_id',
   'timers.timer_fade_volume',

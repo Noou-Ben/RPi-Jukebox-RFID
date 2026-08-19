@@ -160,6 +160,7 @@
         "upload": "Hochladen",
         "upload-files": "Dateien hochladen",
         "upload-folders": "Ordner hochladen",
+        "download-youtube": "Von YouTube herunterladen",
         "create-folder": "Neuer Ordner",
         "select": "Auswählen",
         "select-item": "{{name}} auswählen",
@@ -192,6 +193,22 @@
             "queued": "Wartet",
             "complete": "Hochgeladen",
             "cancelled": "Abgebrochen"
+          }
+        },
+        "youtube-dialog": {
+          "title": "Von YouTube herunterladen",
+          "description": "Füge einen Link zu einem YouTube-Video oder einer YouTube-Playlist ein. Die Audiospur wird in diesen Ordner heruntergeladen.",
+          "url-label": "YouTube-URL",
+          "url-placeholder": "https://www.youtube.com/watch?v=...",
+          "confirm": "Herunterladen",
+          "download-another": "Weiteren Download starten",
+          "generic-error": "Der YouTube-Download ist fehlgeschlagen.",
+          "status": {
+            "submitting": "Download wird gestartet…",
+            "preparing": "Videoinformationen werden abgerufen…",
+            "downloading": "Wird heruntergeladen: {{percent}} %",
+            "converting": "Audio wird konvertiert…",
+            "complete": "Download abgeschlossen"
           }
         },
         "errors": {

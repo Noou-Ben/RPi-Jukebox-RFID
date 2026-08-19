@@ -20,6 +20,7 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 
 import { ACCEPTED_LIBRARY_FILES } from '../../../../utils/library-api';
 import { createUploadSelection } from './upload-selection';
@@ -35,6 +36,7 @@ const LibraryActions = ({
   onCancelSelection,
   onCreateFolder,
   onDeleteSelected,
+  onDownloadYoutube,
   onStartSelection,
   onUploadSelected,
 }) => {
@@ -125,6 +127,16 @@ const LibraryActions = ({
               <MenuItem onClick={() => openPicker(folderInput)} sx={{ minHeight: 44 }}>
                 <ListItemIcon><DriveFolderUploadIcon /></ListItemIcon>
                 <ListItemText>{t('library.folders.manager.upload-folders')}</ListItemText>
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  closeUploadMenu();
+                  onDownloadYoutube();
+                }}
+                sx={{ minHeight: 44 }}
+              >
+                <ListItemIcon><YouTubeIcon /></ListItemIcon>
+                <ListItemText>{t('library.folders.manager.download-youtube')}</ListItemText>
               </MenuItem>
             </Menu>
             <input

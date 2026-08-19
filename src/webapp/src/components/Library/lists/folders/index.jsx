@@ -19,6 +19,7 @@ import DeleteEntriesDialog from './delete-entries-dialog';
 import FolderList from "./folder-list";
 import LibraryActions from './library-actions';
 import UploadDialog from './upload-dialog';
+import YoutubeDialog from './youtube-dialog';
 import {
   uploadSelectionFromDataTransfer,
   uploadSelectionHasEntries,
@@ -46,6 +47,7 @@ const Folders = ({
   const [selectedPaths, setSelectedPaths] = useState(new Set());
   const [uploadSelection, setUploadSelection] = useState(emptyUploadSelection);
   const [isDragging, setIsDragging] = useState(false);
+  const [youtubeDialogOpen, setYoutubeDialogOpen] = useState(false);
   const currentFolder = decodeURIComponent(dir);
 
   const search = ({ name }) => {
@@ -171,6 +173,7 @@ const Folders = ({
           onCancelSelection={cancelSelection}
           onCreateFolder={() => setCreateDialogOpen(true)}
           onDeleteSelected={deleteSelected}
+          onDownloadYoutube={() => setYoutubeDialogOpen(true)}
           onStartSelection={() => setIsManagementSelecting(true)}
           onUploadSelected={handleUploadSelection}
           selectedCount={selectedPaths.size}
@@ -226,6 +229,12 @@ const Folders = ({
         onLibraryChanged={reloadFolder}
         open={uploadSelectionHasEntries(uploadSelection)}
         selection={uploadSelection}
+      />
+      <YoutubeDialog
+        folder={currentFolder}
+        onClose={() => setYoutubeDialogOpen(false)}
+        onLibraryChanged={reloadFolder}
+        open={youtubeDialogOpen}
       />
     </Box>
   );
