@@ -388,6 +388,15 @@
         "max-volume": "Maximum Volume"
       }
     },
+    "spotify": {
+      "title": "Spotify",
+      "control-label": "Spotify Connect",
+      "description": "Play Spotify (Premium account required) via Spotify Connect. Your Spotify password is never entered into or stored by the Jukebox.",
+      "connected": "Connected as \"{{device}}\" - control playback from the Spotify app",
+      "waiting-for-connection": "Waiting for a connection - open the Spotify app and select \"{{device}}\" as the playback device",
+      "process-not-running": "⚠️ go-librespot is not running. Check that it was installed correctly.",
+      "help": "How does this work?"
+    },
     "systemcontrols": {
       "title": "System Controls"
     }

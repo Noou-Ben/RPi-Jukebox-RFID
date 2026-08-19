@@ -386,6 +386,15 @@
         "max-volume": "Maximale Lautstärke"
       }
     },
+    "spotify": {
+      "title": "Spotify",
+      "control-label": "Spotify Connect",
+      "description": "Spotify abspielen (Premium-Konto erforderlich) über Spotify Connect. Dein Spotify-Passwort wird niemals in die Jukebox eingegeben oder von ihr gespeichert.",
+      "connected": "Verbunden als \"{{device}}\" - Steuerung über die Spotify-App",
+      "waiting-for-connection": "Warte auf Verbindung - öffne die Spotify-App und wähle \"{{device}}\" als Wiedergabegerät",
+      "process-not-running": "⚠️ go-librespot läuft nicht. Bitte die Installation prüfen.",
+      "help": "Wie funktioniert das?"
+    },
     "systemcontrols": {
       "title": "Systemsteuerung"
     }

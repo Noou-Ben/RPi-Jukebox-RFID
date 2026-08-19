@@ -2,7 +2,7 @@
 
 **This is where we are in a nutshell:** Playing music from local folders via RFID trigger. We also built a new WebUI to control the Jukebox from a browser.
 
-There are a few things that are specifically not integrated yet: playing streams, podcasts, or Spotify.
+There are a few things that are specifically not integrated yet: playing streams or podcasts. Basic Spotify Connect playback has an initial (unverified on real hardware) implementation - see [Spotify](#spotify) below.
 
 In the following is the currently implemented feature list in more detail. It also shows some of the shortcomings. However, the list is _not complete in terms of planned features_, but probably _reflects more of where work is currently being put into_.
 
@@ -193,7 +193,48 @@ Topics marked _in progress_ are already in the process of implementation by comm
 
 ### Spotify
 
-- [ ] Everything
+Implemented as a dedicated player backend (`components/player/backends/spotify.py` +
+`components/spotify/`) driving [go-librespot](https://github.com/devgianlu/go-librespot)
+(an actively-maintained Spotify Connect client), rather than via Mopidy/`mopidy-spotify`
+as in v2 - see [builders/spotify.md](../builders/spotify.md) and the module docstrings
+for the rationale. Gated behind `spotify.enable` (default `false`), fully inert
+otherwise, so it cannot break MPD-only installs.
+
+> [!WARNING]
+> Nothing below was verified against a real Spotify session: no Spotify Premium
+> account or physical device was available while implementing this. Backend logic is
+> unit-tested against a mocked go-librespot REST API (see `test/player/test_spotify_backend_contract.py`), but the actual
+> subprocess/auth/audio-output path is untested.
+
+- [x] Spotify Connect playback backend registered with the shared player coordinator
+      (`player.ctrl.select_backend('spotify')`), reusing the existing generic
+      play/pause/next/prev/seek/shuffle/repeat/volume RPCs
+- [x] go-librespot process management (spawn/stop/restart) and config generation from
+      `jukebox.yaml`
+- [x] Zeroconf ("Spotify Connect handoff") authentication by default - no Spotify
+      account credentials are entered into or stored by the Jukebox
+- [x] Live status polling of go-librespot's REST API, published on the `playerstatus`
+      topic like any other backend (`provider: spotify`)
+- [x] Dedicated `spotify.ctrl.get_connection_status()` RPC (process/session state,
+      device name, last error) plus `spotify.enable()` / `spotify.disable()` to toggle
+      support at runtime, no Jukebox Core restart required
+- [x] Install routine downloading a prebuilt `go-librespot` binary for the detected
+      architecture (`installation/routines/setup_spotify.sh`), offered as an opt-in
+      question during setup
+- [x] Web App settings panel (enable toggle + connection status) under
+      **Settings → Spotify**
+- [ ] Starting specific playlists/albums/tracks from an RFID card (`play_folder`/
+      `play_album`/`play_single` with a real Spotify URI beyond manual RPC calls) -
+      needs the Spotify Web API (OAuth), out of scope for this first pass
+- [ ] Browsing the user's Spotify library/catalog from the Web App (also needs the
+      Web API)
+- [ ] Cover art for the currently playing Spotify track
+- [ ] `interactive`/`spotify_token` login flows that go-librespot supports (only
+      `zeroconf` is wired up)
+- [ ] Verified against a real Spotify Premium account, real device pairing, and real
+      audio output on a Raspberry Pi
+- [ ] Verified install routine on real hardware/OS (architecture-to-binary mapping for
+      `armv7`/`armv6` is a best guess, not tested)
 
 ### Others
 
