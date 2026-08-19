@@ -19,6 +19,7 @@ modules:
     bluetooth_audio_buttons: controls.bluetooth_audio_buttons
     gpio: gpio.gpioz.plugin
     sync_rfidcards: synchronisation.rfidcards
+    youtube: youtube
   others:
   - misc
 pulse:
@@ -155,6 +156,11 @@ speaking_text:
 sync_rfidcards:
   enable: false
   config_file: ../../shared/settings/sync_rfidcards.yaml
+youtube:
+  enable: false
+  # Preferred audio codec for downloaded files, e.g. 'mp3', 'm4a', 'opus', 'vorbis', 'wav'
+  audio_format: mp3
+  # Requires the 'ffmpeg' binary to be installed on the system for audio extraction and conversion
 webapp:
   coverart_cache_path: ../../src/webapp/build/cover-cache
   # Load cover arts in Webapp. Change to false in case you have performance issue
