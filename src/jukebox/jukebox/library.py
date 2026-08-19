@@ -10,6 +10,7 @@ from pathlib import Path, PurePosixPath
 
 MAX_UPLOAD_SIZE = 1024 * 1024 * 1024
 MAX_DELETE_ENTRIES = 1000
+MAX_MOVE_ENTRIES = 1000
 
 AUDIO_EXTENSIONS = frozenset({
     '.aac',
@@ -376,6 +377,131 @@ class MusicLibrary:
                 raise _operation_error(error, f"delete '{targets[target]}'") from error
             deleted.append(targets[target])
         return deleted
+
+    def rename_entry(self, relative_path, name):
+        root = self.root
+        parts = _parse_relative_path(relative_path, allow_root=False)
+        source = root.joinpath(*parts)
+        try:
+            source.lstat()
+        except FileNotFoundError as error:
+            raise LibraryError(404, 'entry_not_found', f"'{relative_path}' does not exist.") from error
+
+        resolved_source = source.resolve(strict=False)
+        if not _contains_path(root, resolved_source):
+            raise LibraryError(400, 'invalid_path', 'The library path must stay within the music library.')
+
+        is_directory = source.is_dir() and not source.is_symlink()
+        name = _validate_name(name, file_name=not is_directory)
+        if not is_directory:
+            _validate_file_type(name)
+
+        target = source.parent / name
+        if target == source:
+            return target.relative_to(root).as_posix()
+
+        try:
+            target.lstat()
+        except FileNotFoundError:
+            pass
+        else:
+            raise LibraryError(409, 'duplicate_name', f"'{name}' already exists in this folder.")
+
+        try:
+            source.rename(target)
+        except OSError as error:
+            raise _operation_error(error, f"rename '{relative_path}'") from error
+        return target.relative_to(root).as_posix()
+
+    def _resolve_move_candidates(self, relative_paths):
+        root = self.root
+        candidates = []
+        for relative_path in relative_paths:
+            parts = _parse_relative_path(relative_path, allow_root=False)
+            source = root.joinpath(*parts)
+            try:
+                source.lstat()
+            except FileNotFoundError as error:
+                raise LibraryError(404, 'entry_not_found', f"'{relative_path}' does not exist.") from error
+
+            resolved_source = source.resolve(strict=False)
+            if not _contains_path(root, resolved_source):
+                raise LibraryError(400, 'invalid_path', 'The library path must stay within the music library.')
+            candidates.append((source, resolved_source, relative_path))
+
+        # Drop entries nested inside another selected entry: moving the ancestor already
+        # relocates its contents, and attempting to move both would fail the second time.
+        return [
+            (source, resolved_source, relative_path)
+            for source, resolved_source, relative_path in candidates
+            if not any(
+                other_resolved != resolved_source and _contains_path(other_resolved, resolved_source)
+                for _, other_resolved, _ in candidates
+            )
+        ]
+
+    @staticmethod
+    def _plan_move(source, resolved_source, relative_path, destination_dir, seen_targets):
+        if not source.is_symlink() and source.is_dir():
+            if destination_dir == resolved_source or _contains_path(resolved_source, destination_dir):
+                raise LibraryError(
+                    400,
+                    'invalid_destination',
+                    f"'{relative_path}' cannot be moved into itself.",
+                )
+
+        target = destination_dir / source.name
+        if target == source:
+            return target
+
+        collision = target in seen_targets
+        if not collision:
+            try:
+                target.lstat()
+            except FileNotFoundError:
+                pass
+            else:
+                collision = True
+        if collision:
+            raise LibraryError(
+                409,
+                'duplicate_name',
+                f"'{source.name}' already exists in the destination folder.",
+            )
+        seen_targets.add(target)
+        return target
+
+    def move_entries(self, relative_paths, destination):
+        if not isinstance(relative_paths, list) or not relative_paths:
+            raise LibraryError(400, 'invalid_request', 'Select at least one file or folder to move.')
+        if len(relative_paths) > MAX_MOVE_ENTRIES:
+            raise LibraryError(
+                400,
+                'too_many_entries',
+                f'At most {MAX_MOVE_ENTRIES} entries can be moved at once.',
+            )
+
+        root = self.root
+        destination_dir = self._directory(destination)
+        selected = self._resolve_move_candidates(relative_paths)
+
+        # First pass: validate every move and compute its target without touching the
+        # filesystem, mirroring delete_entries' "validate everything before mutating".
+        seen_targets = set()
+        plan = [
+            (source, self._plan_move(source, resolved_source, relative_path, destination_dir, seen_targets), relative_path)
+            for source, resolved_source, relative_path in selected
+        ]
+
+        moved = []
+        for source, target, relative_path in plan:
+            if target != source:
+                try:
+                    source.rename(target)
+                except OSError as error:
+                    raise _operation_error(error, f"move '{relative_path}'") from error
+            moved.append(target.relative_to(root).as_posix())
+        return moved
 
     def update(self):
         try:
