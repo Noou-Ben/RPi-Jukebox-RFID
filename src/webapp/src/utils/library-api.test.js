@@ -2,7 +2,9 @@ import {
   createLibraryFolder,
   deleteLibraryEntries,
   listLibraryEntries,
+  moveLibraryEntries,
   refreshLibrary,
+  renameLibraryEntry,
   uploadLibraryFile,
 } from './library-api';
 import {
@@ -120,6 +122,28 @@ describe('library JSON API', () => {
       message: 'Already exists.',
       status: 409,
     });
+  });
+
+  test('renames and moves entries', async () => {
+    fetch
+      .mockResolvedValueOnce(jsonResponse({ path: 'Renamed' }))
+      .mockResolvedValueOnce(jsonResponse({ moved: ['Destination/Renamed'] }));
+
+    await expect(renameLibraryEntry('Album', 'Renamed')).resolves.toEqual({ path: 'Renamed' });
+    await expect(moveLibraryEntries(['Renamed'], 'Destination')).resolves.toEqual({
+      moved: ['Destination/Renamed'],
+    });
+
+    expect(fetch.mock.calls).toEqual([
+      ['/api/v1/library/entries', expect.objectContaining({
+        body: JSON.stringify({ path: 'Album', name: 'Renamed' }),
+        method: 'PATCH',
+      })],
+      ['/api/v1/library/entries/move', expect.objectContaining({
+        body: JSON.stringify({ paths: ['Renamed'], destination: 'Destination' }),
+        method: 'POST',
+      })],
+    ]);
   });
 });
 
