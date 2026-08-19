@@ -198,6 +198,7 @@ Topics marked _in progress_ are already in the process of implementation by comm
 ### Others
 
 - [x] MQTT
+- [x] YouTube audio download (via yt-dlp) into the music library
 - [ ] Record and Playback using a Mic
 - [ ] Dot Matrix Displays
 
@@ -228,6 +229,7 @@ Topics marked _in progress_ are already in the process of implementation by comm
 - [x] Commit-addressed CI Web App bundles
   - [x] No Node.js or local compilation required on runtime devices
 - [ ] Upload audio files via WebUI <https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2138>
+- [x] Download audio from YouTube via WebUI
 
 ## Installation Procedure
 
