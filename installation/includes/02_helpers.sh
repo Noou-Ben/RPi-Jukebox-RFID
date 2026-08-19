@@ -433,6 +433,12 @@ verify_optional_service_enablement() {
         log "  INFO: optional service ${option}${service} is not installed."
     elif [[ "${actual_enablement}" == "static" ]]; then
         log "  INFO: optional service ${option}${service} is set static."
+    elif [[ -z "${actual_enablement}" ]]; then
+        # Some first-boot units (e.g. raspi-config.service after Raspberry Pi
+        # Imager's headless customization already ran) remove or unlink
+        # themselves before this check runs, leaving `systemctl is-enabled`
+        # with nothing to report. That's equivalent to "not installed" here.
+        log "  INFO: optional service ${option}${service} reported no enablement state (likely already removed)."
     elif [[ ! "${actual_enablement}" == "${desired_enablement}" ]]; then
         exit_on_error "ERROR: service ${option}${service} is not ${desired_enablement} (state: ${actual_enablement})."
     fi
