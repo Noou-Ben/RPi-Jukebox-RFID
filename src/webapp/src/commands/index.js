@@ -296,6 +296,21 @@ const commands = {
     argKeys: ['settings'],
   },
 
+  // Spotify
+  getSpotifyStatus: {
+    _package: 'spotify',
+    plugin: 'ctrl',
+    method: 'get_connection_status',
+  },
+  enableSpotify: {
+    _package: 'spotify',
+    plugin: 'enable',
+  },
+  disableSpotify: {
+    _package: 'spotify',
+    plugin: 'disable',
+  },
+
   // Synchronisation
   'sync_rfidcards_all': {
     _package: 'sync_rfidcards',
