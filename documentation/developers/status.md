@@ -228,6 +228,7 @@ Topics marked _in progress_ are already in the process of implementation by comm
 - [x] Commit-addressed CI Web App bundles
   - [x] No Node.js or local compilation required on runtime devices
 - [ ] Upload audio files via WebUI <https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2138>
+- [x] Rename and move library files/folders via WebUI
 
 ## Installation Procedure
 
