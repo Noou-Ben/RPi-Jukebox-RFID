@@ -52,6 +52,9 @@ def _sanitize_folder_name(title: str) -> str:
 class _YtDlpLogger:
     """Route yt-dlp's internal log messages into the Jukebox logger"""
 
+    def __init__(self):
+        self.last_error = None
+
     def debug(self, msg):
         # yt-dlp also routes non-debug info messages through debug() prefixed with '[debug] '
         if msg.startswith('[debug] '):
@@ -66,6 +69,7 @@ class _YtDlpLogger:
         logger.warning(msg)
 
     def error(self, msg):
+        self.last_error = msg
         logger.error(msg)
 
 
@@ -148,7 +152,7 @@ class YoutubeDownload:
         self._publish_progress(state='downloading', percent=0, url=url, folder=folder_relpath)
         try:
             self._run_ytdlp(url, target_dir, folder_relpath)
-        except yt_dlp.utils.DownloadError as error:
+        except (yt_dlp.utils.DownloadError, YoutubeDownloadError) as error:
             logger.error(f"YouTube download failed for '{url}': {error}")
             self._publish_progress(state='error', message=str(error), url=url, folder=folder_relpath)
             return
@@ -208,6 +212,7 @@ class YoutubeDownload:
         return info.get('title') or 'YouTube Download'
 
     def _run_ytdlp(self, url: str, target_dir, folder_relpath: str):
+        ytdlp_logger = _YtDlpLogger()
         ydl_opts = {
             'format': 'bestaudio/best',
             'outtmpl': str(target_dir / '%(title)s.%(ext)s'),
@@ -221,14 +226,21 @@ class YoutubeDownload:
                 {'key': 'FFmpegMetadata'},
                 {'key': 'EmbedThumbnail'},
             ],
+            # 'only_download' lets a playlist skip a broken entry and continue with the
+            # rest, but it also means yt-dlp reports success (return code 0) even when
+            # every item failed - the return code below is what actually catches that.
             'ignoreerrors': 'only_download',
             'quiet': True,
             'no_warnings': True,
-            'logger': _YtDlpLogger(),
+            'logger': ytdlp_logger,
             'progress_hooks': [lambda status: self._progress_hook(status, url, folder_relpath)],
         }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+            return_code = ydl.download([url])
+        if return_code:
+            raise YoutubeDownloadError(
+                ytdlp_logger.last_error or 'yt-dlp reported an error; see the Jukebox log for details.'
+            )
 
     def _progress_hook(self, status: dict, url: str, folder_relpath: str):
         state = status.get('status')
