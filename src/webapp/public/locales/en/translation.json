@@ -166,6 +166,9 @@
         "select-item": "Select {{name}}",
         "delete-selected_one": "Delete {{count}} item",
         "delete-selected_other": "Delete {{count}} items",
+        "rename-selected": "Rename",
+        "move-selected_one": "Move {{count}} item",
+        "move-selected_other": "Move {{count}} items",
         "drop-files": "Drop files or folders here to upload them to this folder.",
         "read-folder-error": "The selected folder could not be read by this browser.",
         "create": {
@@ -178,6 +181,18 @@
           "title_other": "Delete {{count}} items?",
           "permanent": "This deletion is permanent and cannot be undone.",
           "folder-warning": "Selected folders and all files and folders inside them will be deleted."
+        },
+        "rename": {
+          "title": "Rename",
+          "name": "Name",
+          "confirm": "Rename"
+        },
+        "move": {
+          "title_one": "Move {{count}} item",
+          "title_other": "Move {{count}} items",
+          "current-folder": "Current folder: {{folder}}",
+          "no-subfolders": "This folder has no subfolders.",
+          "confirm": "Move here"
         },
         "upload-dialog": {
           "title": "Upload files and folders",
@@ -218,14 +233,17 @@
           "file_too_large": "Files are limited to 1 GiB.",
           "folder_not_found": "The destination folder no longer exists.",
           "insufficient_storage": "There is not enough storage for this operation.",
+          "invalid_destination": "A folder cannot be moved into itself or one of its subfolders.",
           "invalid_file_name": "The file name is invalid.",
           "invalid_folder_name": "The folder name is invalid.",
           "invalid_path": "The selected path is outside the music library.",
           "mpd_update_failed": "The files changed, but the MPD library could not be updated.",
           "network_error": "The connection to the Phoniebox failed.",
+          "not_a_folder": "The destination is not a folder.",
           "permission_denied": "The Phoniebox does not have permission for this operation.",
           "request_failed": "The library operation failed.",
           "storage_error": "The storage operation failed.",
+          "too_many_entries": "Too many items are selected for this operation.",
           "unsupported_file_type": "This file type is not supported."
         }
       }

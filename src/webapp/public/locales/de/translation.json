@@ -166,6 +166,9 @@
         "select-item": "{{name}} auswählen",
         "delete-selected_one": "{{count}} Element löschen",
         "delete-selected_other": "{{count}} Elemente löschen",
+        "rename-selected": "Umbenennen",
+        "move-selected_one": "{{count}} Element verschieben",
+        "move-selected_other": "{{count}} Elemente verschieben",
         "drop-files": "Dateien oder Ordner hier ablegen, um sie in diesen Ordner hochzuladen.",
         "read-folder-error": "Der ausgewählte Ordner konnte von diesem Browser nicht gelesen werden.",
         "create": {
@@ -178,6 +181,18 @@
           "title_other": "{{count}} Elemente löschen?",
           "permanent": "Das Löschen ist endgültig und kann nicht rückgängig gemacht werden.",
           "folder-warning": "Ausgewählte Ordner sowie alle darin enthaltenen Dateien und Ordner werden gelöscht."
+        },
+        "rename": {
+          "title": "Umbenennen",
+          "name": "Name",
+          "confirm": "Umbenennen"
+        },
+        "move": {
+          "title_one": "{{count}} Element verschieben",
+          "title_other": "{{count}} Elemente verschieben",
+          "current-folder": "Aktueller Ordner: {{folder}}",
+          "no-subfolders": "Dieser Ordner hat keine Unterordner.",
+          "confirm": "Hierher verschieben"
         },
         "upload-dialog": {
           "title": "Dateien und Ordner hochladen",
@@ -218,14 +233,17 @@
           "file_too_large": "Dateien dürfen höchstens 1 GiB groß sein.",
           "folder_not_found": "Der Zielordner ist nicht mehr vorhanden.",
           "insufficient_storage": "Für diesen Vorgang ist nicht genügend Speicherplatz vorhanden.",
+          "invalid_destination": "Ein Ordner kann nicht in sich selbst oder einen seiner Unterordner verschoben werden.",
           "invalid_file_name": "Der Dateiname ist ungültig.",
           "invalid_folder_name": "Der Ordnername ist ungültig.",
           "invalid_path": "Der ausgewählte Pfad liegt außerhalb der Musikbibliothek.",
           "mpd_update_failed": "Die Dateien wurden geändert, aber die MPD-Bibliothek konnte nicht aktualisiert werden.",
           "network_error": "Die Verbindung zur Phoniebox ist fehlgeschlagen.",
+          "not_a_folder": "Das Ziel ist kein Ordner.",
           "permission_denied": "Die Phoniebox hat keine Berechtigung für diesen Vorgang.",
           "request_failed": "Der Bibliotheksvorgang ist fehlgeschlagen.",
           "storage_error": "Der Speichervorgang ist fehlgeschlagen.",
+          "too_many_entries": "Es sind zu viele Elemente für diesen Vorgang ausgewählt.",
           "unsupported_file_type": "Dieser Dateityp wird nicht unterstützt."
         }
       }

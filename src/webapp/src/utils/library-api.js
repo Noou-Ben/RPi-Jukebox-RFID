@@ -83,6 +83,16 @@ const deleteLibraryEntries = (paths) => jsonRequest('/entries', {
   body: JSON.stringify({ paths }),
 });
 
+const renameLibraryEntry = (path, name) => jsonRequest('/entries', {
+  method: 'PATCH',
+  body: JSON.stringify({ path, name }),
+});
+
+const moveLibraryEntries = (paths, destination) => jsonRequest('/entries/move', {
+  method: 'POST',
+  body: JSON.stringify({ paths, destination }),
+});
+
 const refreshLibrary = () => jsonRequest('/refresh', {
   method: 'POST',
   body: '',
@@ -156,7 +166,9 @@ export {
   createLibraryFolder,
   deleteLibraryEntries,
   listLibraryEntries,
+  moveLibraryEntries,
   refreshLibrary,
+  renameLibraryEntry,
   translateLibraryError,
   uploadLibraryFile,
 };

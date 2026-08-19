@@ -271,6 +271,7 @@ otherwise, so it cannot break MPD-only installs.
   - [x] No Node.js or local compilation required on runtime devices
 - [ ] Upload audio files via WebUI <https://github.com/MiczFlor/RPi-Jukebox-RFID/issues/2138>
 - [x] Download audio from YouTube via WebUI
+- [x] Rename and move library files/folders via WebUI
 
 ## Installation Procedure
 

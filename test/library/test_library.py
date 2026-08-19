@@ -174,3 +174,108 @@ def test_uploaded_file_mode_is_shared_writable(music_library):
     upload.finish()
 
     assert os.stat(root / 'track.wav').st_mode & 0o777 == 0o666
+
+
+def test_rename_entry_renames_file_and_folder(music_library):
+    library, root, _ = music_library
+    (root / 'track.mp3').write_bytes(b'audio')
+    (root / 'Album').mkdir()
+
+    assert library.rename_entry('track.mp3', 'renamed.mp3') == 'renamed.mp3'
+    assert (root / 'renamed.mp3').read_bytes() == b'audio'
+    assert not (root / 'track.mp3').exists()
+
+    assert library.rename_entry('Album', 'Renamed Album') == 'Renamed Album'
+    assert (root / 'Renamed Album').is_dir()
+    assert not (root / 'Album').exists()
+
+
+def test_rename_entry_to_same_name_is_a_noop(music_library):
+    library, root, _ = music_library
+    (root / 'track.mp3').write_bytes(b'audio')
+
+    assert library.rename_entry('track.mp3', 'track.mp3') == 'track.mp3'
+    assert (root / 'track.mp3').read_bytes() == b'audio'
+
+
+def test_rename_entry_rejects_collisions_and_missing_entries(music_library):
+    library, root, _ = music_library
+    (root / 'track.mp3').write_bytes(b'audio')
+    (root / 'other.mp3').write_bytes(b'audio')
+
+    with pytest.raises(LibraryError) as error:
+        library.rename_entry('track.mp3', 'other.mp3')
+    assert error.value.code == 'duplicate_name'
+
+    with pytest.raises(LibraryError) as error:
+        library.rename_entry('missing.mp3', 'new.mp3')
+    assert error.value.code == 'entry_not_found'
+
+
+def test_rename_entry_rejects_invalid_and_unsupported_names(music_library):
+    library, root, _ = music_library
+    (root / 'track.mp3').write_bytes(b'audio')
+    (root / 'Album').mkdir()
+
+    with pytest.raises(LibraryError) as error:
+        library.rename_entry('track.mp3', 'archive.zip')
+    assert error.value.code == 'unsupported_file_type'
+
+    with pytest.raises(LibraryError) as error:
+        library.rename_entry('Album', '../Escaped')
+    assert error.value.code == 'invalid_folder_name'
+
+
+def test_move_entries_moves_files_and_folders(music_library):
+    library, root, _ = music_library
+    (root / 'track.mp3').write_bytes(b'audio')
+    (root / 'Destination').mkdir()
+
+    assert library.move_entries(['track.mp3'], 'Destination') == ['Destination/track.mp3']
+    assert (root / 'Destination' / 'track.mp3').read_bytes() == b'audio'
+    assert not (root / 'track.mp3').exists()
+
+
+def test_move_entries_rejects_folder_into_itself_or_descendant(music_library):
+    library, root, _ = music_library
+    album = root / 'Album'
+    album.mkdir()
+    nested = album / 'Nested'
+    nested.mkdir()
+
+    with pytest.raises(LibraryError) as error:
+        library.move_entries(['Album'], 'Album')
+    assert error.value.code == 'invalid_destination'
+
+    with pytest.raises(LibraryError) as error:
+        library.move_entries(['Album'], 'Album/Nested')
+    assert error.value.code == 'invalid_destination'
+
+
+def test_move_entries_rejects_destination_collisions(music_library):
+    library, root, _ = music_library
+    (root / 'track.mp3').write_bytes(b'audio')
+    destination = root / 'Destination'
+    destination.mkdir()
+    (destination / 'track.mp3').write_bytes(b'existing')
+
+    with pytest.raises(LibraryError) as error:
+        library.move_entries(['track.mp3'], 'Destination')
+    assert error.value.code == 'duplicate_name'
+    assert (destination / 'track.mp3').read_bytes() == b'existing'
+    assert (root / 'track.mp3').exists()
+
+
+def test_move_entries_skips_nested_selections_covered_by_their_parent(music_library):
+    library, root, _ = music_library
+    album = root / 'Album'
+    album.mkdir()
+    (album / 'track.mp3').write_bytes(b'audio')
+    destination = root / 'Destination'
+    destination.mkdir()
+
+    moved = library.move_entries(['Album', 'Album/track.mp3'], 'Destination')
+
+    assert moved == ['Destination/Album']
+    assert (destination / 'Album' / 'track.mp3').read_bytes() == b'audio'
+    assert not album.exists()

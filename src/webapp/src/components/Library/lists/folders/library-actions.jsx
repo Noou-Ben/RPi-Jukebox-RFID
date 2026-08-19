@@ -18,6 +18,8 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CloseIcon from '@mui/icons-material/Close';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import YouTubeIcon from '@mui/icons-material/YouTube';
@@ -37,6 +39,8 @@ const LibraryActions = ({
   onCreateFolder,
   onDeleteSelected,
   onDownloadYoutube,
+  onMoveSelected,
+  onRenameSelected,
   onStartSelection,
   onUploadSelected,
 }) => {
@@ -82,6 +86,24 @@ const LibraryActions = ({
     >
       {isSelecting
         ? <>
+            <Button
+              disabled={selectedCount !== 1}
+              onClick={onRenameSelected}
+              startIcon={<DriveFileRenameOutlineIcon />}
+              sx={actionButtonSx}
+              variant="outlined"
+            >
+              {t('library.folders.manager.rename-selected')}
+            </Button>
+            <Button
+              disabled={selectedCount === 0}
+              onClick={onMoveSelected}
+              startIcon={<DriveFileMoveIcon />}
+              sx={actionButtonSx}
+              variant="outlined"
+            >
+              {t('library.folders.manager.move-selected', { count: selectedCount })}
+            </Button>
             <Button
               color="error"
               disabled={selectedCount === 0}

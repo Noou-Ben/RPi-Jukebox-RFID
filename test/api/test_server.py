@@ -290,6 +290,71 @@ class ApiHandlerTest(tornado.testing.AsyncHTTPTestCase):
         assert json.loads(delete_response.body) == {'deleted': ['Album']}
         assert not (Path(self.library_directory.name) / 'Album').exists()
 
+    def test_library_rename_and_move_entries(self):
+        self.fetch(
+            '/api/v1/library/folders',
+            method='POST',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({'parent': '.', 'name': 'Album'}),
+        )
+        self.fetch(
+            '/api/v1/library/folders',
+            method='POST',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({'parent': '.', 'name': 'Destination'}),
+        )
+
+        rename_response = self.fetch(
+            '/api/v1/library/entries',
+            method='PATCH',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({'path': 'Album', 'name': 'Renamed'}),
+            allow_nonstandard_methods=True,
+        )
+        assert rename_response.code == 200
+        assert json.loads(rename_response.body) == {'path': 'Renamed'}
+        assert (Path(self.library_directory.name) / 'Renamed').is_dir()
+
+        move_response = self.fetch(
+            '/api/v1/library/entries/move',
+            method='POST',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({'paths': ['Renamed'], 'destination': 'Destination'}),
+        )
+        assert move_response.code == 200
+        assert json.loads(move_response.body) == {'moved': ['Destination/Renamed']}
+        assert (Path(self.library_directory.name) / 'Destination' / 'Renamed').is_dir()
+        assert not (Path(self.library_directory.name) / 'Renamed').exists()
+
+    def test_library_rename_and_move_reject_invalid_requests(self):
+        self.fetch(
+            '/api/v1/library/folders',
+            method='POST',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({'parent': '.', 'name': 'Album'}),
+        )
+
+        duplicate_rename = self.fetch(
+            '/api/v1/library/entries',
+            method='PATCH',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({'path': 'Album', 'name': '..'}),
+            allow_nonstandard_methods=True,
+            raise_error=False,
+        )
+        assert duplicate_rename.code == 400
+        assert json.loads(duplicate_rename.body)['error']['code'] == 'invalid_folder_name'
+
+        move_into_self = self.fetch(
+            '/api/v1/library/entries/move',
+            method='POST',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps({'paths': ['Album'], 'destination': 'Album'}),
+            raise_error=False,
+        )
+        assert move_into_self.code == 400
+        assert json.loads(move_into_self.body)['error']['code'] == 'invalid_destination'
+
     def test_library_endpoints_reject_invalid_types_and_paths(self):
         unsupported_query = urllib.parse.urlencode({'folder': '.', 'name': 'archive.zip'})
         unsupported = self.fetch(
