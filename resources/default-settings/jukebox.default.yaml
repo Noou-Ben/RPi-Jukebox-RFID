@@ -63,6 +63,14 @@ pulse:
       soft_max_volume: 100
       # Leave pulse_sink_name unfilled to disable secondary output
       # pulse_sink_name: bluez_sink.C4_FB_20_63_CO_FE.a2dp_sink
+volume:
+  # Mirror every volume change into the active player backend's own volume control
+  # (e.g. MPD's native 'setvol', when its mixer_type is set to 'software' in mpd.conf).
+  # Only needed for outputs where the audio server's own volume changes are accepted
+  # but never actually change the audible level (e.g. some simple I2S DACs with no
+  # real ALSA mixer control). Leave off for any output where the audio server's own
+  # volume already works, since enabling both would attenuate twice.
+  bridge_to_player_volume: false
 jingle:
    # Supported file formats as jingles: *.wav and *.mp3. Note that *.wav is faster!
   startup_sound: ../../resources/audio/startupsound.wav
