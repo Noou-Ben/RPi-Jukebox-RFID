@@ -328,6 +328,9 @@
       "title": "General Settings",
       "show_covers": {
         "title": "Show Cover Art"
+      },
+      "dark_mode": {
+        "title": "Dark Mode"
       }
     },
     "timers": {

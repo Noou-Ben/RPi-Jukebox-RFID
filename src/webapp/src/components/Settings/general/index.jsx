@@ -9,6 +9,7 @@ import {
   Divider,
   Grid,
 } from '@mui/material';
+import DarkMode from './dark-mode';
 import ShowCovers from './show-covers';
 
 const SettingsGeneral = () => {
@@ -31,6 +32,7 @@ const SettingsGeneral = () => {
           }}
         >
           <ShowCovers />
+          <DarkMode />
         </Grid>
       </CardContent>
     </Card>
