@@ -586,6 +586,10 @@ class VolumeControl:
             if max_volume < current_volume:
                 self._set_volume(pulse, max_volume)
         cfg.setn('pulse', 'soft_max_volume', value=max_volume)
+        # setn() only updates the in-memory config - without an explicit save this
+        # only takes effect until the next restart/reboot, silently reverting to
+        # whatever's still on disk (see how spotify.enable/disable do the same).
+        cfg.save(only_if_changed=True)
 
     @plugin.tag
     def get_soft_max_volume(self):
