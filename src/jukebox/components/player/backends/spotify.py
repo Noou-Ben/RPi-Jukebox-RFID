@@ -279,7 +279,7 @@ class PlayerSpotify:
 
             try:
                 self._process = subprocess.Popen(
-                    [self.binary_path, '-config_dir', self.config_dir],
+                    [self.binary_path, '--config_dir', self.config_dir],
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                     start_new_session=True,
