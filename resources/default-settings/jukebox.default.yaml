@@ -12,6 +12,9 @@ modules:
     jingle.alsawave: jingle.alsawave
     jingle.jinglemp3: jingle.jinglemp3
     player: player.plugin
+    # Must be loaded after 'player': it registers itself as an additional player backend.
+    # Inert unless spotify.enable is set to true below.
+    spotify: spotify
     cards: rfid.cards
     rfid: rfid.reader
     timers: timers
@@ -19,6 +22,7 @@ modules:
     bluetooth_audio_buttons: controls.bluetooth_audio_buttons
     gpio: gpio.gpioz.plugin
     sync_rfidcards: synchronisation.rfidcards
+    youtube: youtube
   others:
   - misc
 pulse:
@@ -59,6 +63,14 @@ pulse:
       soft_max_volume: 100
       # Leave pulse_sink_name unfilled to disable secondary output
       # pulse_sink_name: bluez_sink.C4_FB_20_63_CO_FE.a2dp_sink
+volume:
+  # Mirror every volume change into the active player backend's own volume control
+  # (e.g. MPD's native 'setvol', when its mixer_type is set to 'software' in mpd.conf).
+  # Only needed for outputs where the audio server's own volume changes are accepted
+  # but never actually change the audible level (e.g. some simple I2S DACs with no
+  # real ALSA mixer control). Leave off for any output where the audio server's own
+  # volume already works, since enabling both would attenuate twice.
+  bridge_to_player_volume: false
 jingle:
    # Supported file formats as jingles: *.wav and *.mp3. Note that *.wav is faster!
   startup_sound: ../../resources/audio/startupsound.wav
@@ -93,6 +105,33 @@ playermpd:
   stopped_prev_action: prev
   # Must be one of: 'none', 'next', 'rewind':
   stopped_next_action: next
+spotify:
+  # Spotify support is off by default: it is fully inert (no process spawned, no
+  # extra network activity) unless explicitly enabled here.
+  # See documentation/developers/status.md for what is/isn't implemented.
+  enable: false
+  # Device name advertised via Spotify Connect / shown in the Spotify app
+  device_name: Phoniebox
+  # Path to the go-librespot binary, installed by installation/routines/setup_spotify.sh
+  binary_path: ../../shared/spotify/bin/go-librespot
+  # go-librespot's own config/state/credentials-cache directory
+  config_dir: ../../shared/spotify
+  # go-librespot's local REST API, used by this Jukebox to control playback
+  api_host: 127.0.0.1
+  api_port: 3678
+  # Must be one of: 'alsa', 'pulseaudio', 'pipe' (see go-librespot docs). 'pulseaudio'
+  # matches the PipeWire/PulseAudio-based audio routing already used elsewhere in v3.
+  audio_backend: pulseaudio
+  audio_device: default
+  # Must be one of: 'zeroconf' (default, no credentials - pair via the Spotify app,
+  # like a Chromecast), 'spotify_token', 'interactive' (the latter two are supported
+  # by go-librespot but not wired up in the Jukebox UI yet)
+  credentials_type: zeroconf
+  # Whether to remember the account after a Zeroconf pairing so re-pairing is not
+  # needed after a restart. Left off by default so no account details are persisted
+  # to disk unless the user opts in.
+  persist_credentials: false
+  status_poll_interval_sec: 1.0
 rpc:
   tcp_port: 5555
 api:
@@ -155,6 +194,11 @@ speaking_text:
 sync_rfidcards:
   enable: false
   config_file: ../../shared/settings/sync_rfidcards.yaml
+youtube:
+  enable: false
+  # Preferred audio codec for downloaded files, e.g. 'mp3', 'm4a', 'opus', 'vorbis', 'wav'
+  audio_format: mp3
+  # Requires the 'ffmpeg' binary to be installed on the system for audio extraction and conversion
 webapp:
   coverart_cache_path: ../../src/webapp/build/cover-cache
   # Load cover arts in Webapp. Change to false in case you have performance issue

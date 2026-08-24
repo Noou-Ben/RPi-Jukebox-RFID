@@ -28,3 +28,6 @@ gpiozero
 
 # MQTT
 paho-mqtt
+
+# YouTube download (requires the 'ffmpeg' binary to be installed separately for audio extraction)
+yt-dlp

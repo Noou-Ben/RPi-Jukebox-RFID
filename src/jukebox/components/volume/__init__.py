@@ -48,6 +48,20 @@ functions (see their documentation for details):
 1. :func:`add_on_connect_callback`
 2. :func:`add_on_output_change_callbacks`
 3. :func:`add_on_volume_change_callback`
+
+## Bridging to the player's own volume
+
+On some outputs (typically simple I2S DACs with no real ALSA mixer control),
+the audio server accepts a sink volume change and reports it back correctly,
+but never actually applies any gain to the audio. If that's the case here,
+set ``volume.bridge_to_player_volume: true`` in ``jukebox.yaml`` and set
+MPD's own ``mixer_type`` to ``software`` in ``mpd.conf`` (keep ``type
+"pulse"`` so muting and output-switching still work as before). This mirrors
+every volume change into the active player backend's own volume control (see
+:meth:`components.player.coordinator.PlayerCoordinator.set_volume`), so MPD
+applies the gain itself before handing audio to the audio server. Leave this
+off (the default) for any output where the audio server's own volume already
+works, since stacking both would attenuate twice.
 """
 import collections
 import logging
@@ -354,6 +368,7 @@ class VolumeControl:
         # Prepare quick look-ups for volume_limit
         self._volume_limit = {x.pulse_sink_name: x.volume_limit / 100.0 for x in self._sink_list}
         self._soft_max_volume = cfg.setndefault('pulse', 'soft_max_volume', value=100)
+        self._bridge_to_player_volume = cfg.setndefault('volume', 'bridge_to_player_volume', value=False)
 
         # For both callback handler: We use the context lock only explicitly for registering new functions
         # When the callbacks are run, it happens from inside the volume_control which an already acquired lock
@@ -368,6 +383,11 @@ class VolumeControl:
         self.on_volume_change_callbacks = VolumeControl.OutputVolumeCallbackHandler(
             'on_volume_change_callbacks', logger, context=audio_monitor)
 
+    def _bridge_volume_to_player(self, volume: float):
+        if not self._bridge_to_player_volume:
+            return
+        plugin.call_ignore_errors('player', 'ctrl', 'set_volume', args=[int(round(volume))])
+
     def _set_volume(self, pulse_inst: pulsectl.Pulse, volume: int, sink_name: Optional[str] = None):
         # Set volume triggers should not trigger a volume change event,
         # as event listen is stopped. Need to manually publish volume
@@ -380,11 +400,13 @@ class VolumeControl:
         if volume == 0:
             pulse_inst.mute(sink, mute=True)
             pulse_inst.volume_set_all_chans(sink, 0)
+            self._bridge_volume_to_player(0)
         else:
             # Always make sure, we are not muted!
             pulse_inst.mute(sink, mute=False)
             volume = volume * self._volume_limit.get(sink_name, 1)
             pulse_inst.volume_set_all_chans(sink, volume / 100.0)
+            self._bridge_volume_to_player(volume)
         self._publish_volume(pulse_inst)
 
     def _get_volume_and_mute(self, pulse_inst: pulsectl.Pulse, sink_name: Optional[str] = None):
@@ -538,6 +560,10 @@ class VolumeControl:
         with audio_monitor as pulse_inst:
             sink = pulse_inst.get_sink_by_name(pulse_inst.server_info().default_sink_name)
             pulse_inst.mute(sink, mute)
+            if mute:
+                self._bridge_volume_to_player(0)
+            else:
+                self._bridge_volume_to_player(self._get_volume_and_mute(pulse_inst)[0])
             self._publish_volume(pulse_inst)
 
     @plugin.tag

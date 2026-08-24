@@ -18,7 +18,10 @@ import CreateFolderDialog from './create-folder-dialog';
 import DeleteEntriesDialog from './delete-entries-dialog';
 import FolderList from "./folder-list";
 import LibraryActions from './library-actions';
+import MoveEntriesDialog from './move-entries-dialog';
+import RenameEntryDialog from './rename-entry-dialog';
 import UploadDialog from './upload-dialog';
+import YoutubeDialog from './youtube-dialog';
 import {
   uploadSelectionFromDataTransfer,
   uploadSelectionHasEntries,
@@ -41,11 +44,14 @@ const Folders = ({
   const [reloadNumber, setReloadNumber] = useState(0);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [deleteEntries, setDeleteEntries] = useState([]);
+  const [renameTarget, setRenameTarget] = useState(null);
+  const [moveEntries, setMoveEntries] = useState([]);
   const [operationWarning, setOperationWarning] = useState('');
   const [isManagementSelecting, setIsManagementSelecting] = useState(false);
   const [selectedPaths, setSelectedPaths] = useState(new Set());
   const [uploadSelection, setUploadSelection] = useState(emptyUploadSelection);
   const [isDragging, setIsDragging] = useState(false);
+  const [youtubeDialogOpen, setYoutubeDialogOpen] = useState(false);
   const currentFolder = decodeURIComponent(dir);
 
   const search = ({ name }) => {
@@ -121,6 +127,29 @@ const Folders = ({
     reloadFolder();
   };
 
+  const renameSelected = () => {
+    const [target] = folders.filter(({ relpath }) => selectedPaths.has(relpath));
+    if (target) setRenameTarget(target);
+  };
+
+  const renameCompleted = (warning = '') => {
+    setRenameTarget(null);
+    setOperationWarning(warning);
+    cancelSelection();
+    reloadFolder();
+  };
+
+  const moveSelected = () => {
+    setMoveEntries(folders.filter(({ relpath }) => selectedPaths.has(relpath)));
+  };
+
+  const moveCompleted = (warning = '') => {
+    setMoveEntries([]);
+    setOperationWarning(warning);
+    cancelSelection();
+    reloadFolder();
+  };
+
   const folderCreated = () => {
     setCreateDialogOpen(false);
     reloadFolder();
@@ -171,6 +200,9 @@ const Folders = ({
           onCancelSelection={cancelSelection}
           onCreateFolder={() => setCreateDialogOpen(true)}
           onDeleteSelected={deleteSelected}
+          onDownloadYoutube={() => setYoutubeDialogOpen(true)}
+          onMoveSelected={moveSelected}
+          onRenameSelected={renameSelected}
           onStartSelection={() => setIsManagementSelecting(true)}
           onUploadSelected={handleUploadSelection}
           selectedCount={selectedPaths.size}
@@ -220,12 +252,31 @@ const Folders = ({
         onDeleted={deletionCompleted}
         open={deleteEntries.length > 0}
       />
+      <RenameEntryDialog
+        entry={renameTarget}
+        onClose={() => setRenameTarget(null)}
+        onRenamed={renameCompleted}
+        open={Boolean(renameTarget)}
+      />
+      <MoveEntriesDialog
+        entries={moveEntries}
+        initialFolder={currentFolder}
+        onClose={() => setMoveEntries([])}
+        onMoved={moveCompleted}
+        open={moveEntries.length > 0}
+      />
       <UploadDialog
         folder={currentFolder}
         onClose={() => setUploadSelection(emptyUploadSelection)}
         onLibraryChanged={reloadFolder}
         open={uploadSelectionHasEntries(uploadSelection)}
         selection={uploadSelection}
+      />
+      <YoutubeDialog
+        folder={currentFolder}
+        onClose={() => setYoutubeDialogOpen(false)}
+        onLibraryChanged={reloadFolder}
+        open={youtubeDialogOpen}
       />
     </Box>
   );

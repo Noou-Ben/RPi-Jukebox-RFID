@@ -368,9 +368,11 @@ class PlayerCoordinator:
             song_url,
         )
 
+    @plugs.tag
     def get_volume(self):
         return self._call_active('get_volume')
 
+    @plugs.tag
     def set_volume(self, volume):
         return self._call_active('set_volume', volume)
 

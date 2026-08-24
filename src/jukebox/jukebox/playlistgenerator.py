@@ -39,6 +39,10 @@ In ``*.txt`` and ``*.m3u`` files, all lines starting with ``#`` are ignored.
 # self.default_handler would need to be replaced
 # to add add(local:track:filename") and not only add "filename" (with also probably some encoding)
 #
+# Update: Spotify support was added via a dedicated go-librespot-backed player backend
+# (components/player/backends/spotify.py) instead of via mopidy/mpd, so this class is
+# still MPD/local-library-only by design - see documentation/developers/status.md.
+#
 # Generally speaking, the decode..() functions below do decoding and formatting of file entries
 # The most general solution would be to split that. Use an intermediate format based on a NamedTuple which
 # contains the URI and the type of URI (where it was parsed from). After playlist has been collected, run a formatter

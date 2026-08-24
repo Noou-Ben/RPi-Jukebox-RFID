@@ -363,6 +363,49 @@ class LibraryEntriesHandler(StreamingJsonHandler):
             return
         self.write({'deleted': deleted})
 
+    async def patch(self):
+        if self.reject_oversized_body():
+            return
+        try:
+            body = self.json_body()
+            path = body.get('path')
+            name = body.get('name')
+            renamed_path = await tornado.ioloop.IOLoop.current().run_in_executor(
+                self.executor,
+                self.library.rename_entry,
+                path,
+                name,
+            )
+        except LibraryError as error:
+            self.finish_library_error(error)
+            return
+        self.write({'path': renamed_path})
+
+
+@tornado.web.stream_request_body
+class LibraryEntriesMoveHandler(StreamingJsonHandler):
+    def initialize(self, library, executor):
+        self.library = library
+        self.executor = executor
+
+    async def post(self):
+        if self.reject_oversized_body():
+            return
+        try:
+            body = self.json_body()
+            paths = body.get('paths')
+            destination = body.get('destination')
+            moved = await tornado.ioloop.IOLoop.current().run_in_executor(
+                self.executor,
+                self.library.move_entries,
+                paths,
+                destination,
+            )
+        except LibraryError as error:
+            self.finish_library_error(error)
+            return
+        self.write({'moved': moved})
+
 
 class LibraryRefreshHandler(JsonErrorHandler):
     def initialize(self, library, executor):
@@ -444,6 +487,11 @@ def make_application(
             (
                 r'/api/v1/library/entries',
                 LibraryEntriesHandler,
+                {'library': library, 'executor': library_executor},
+            ),
+            (
+                r'/api/v1/library/entries/move',
+                LibraryEntriesMoveHandler,
                 {'library': library, 'executor': library_executor},
             ),
             (

@@ -211,6 +211,31 @@ Do you want to setup a rfid reader? [Y/n]"
   log "ENABLE_RFID_READER=${ENABLE_RFID_READER}"
 }
 
+_option_spotify() {
+  # ENABLE_SPOTIFY
+  clear_c
+  print_c "------------------------ SPOTIFY ------------------------
+
+Phoniebox can play music from Spotify (Premium account
+required) using go-librespot, an open-source Spotify
+Connect client. Once enabled, your Phoniebox shows up as
+a speaker in the Spotify app - no password is ever stored
+on the box.
+
+This downloads an extra binary and is off by default.
+Do you want to enable Spotify support? [y/N]"
+  read -r response
+  case "$response" in
+    [yY][eE][sS]|[yY])
+      ENABLE_SPOTIFY=true
+      ;;
+    *)
+      ENABLE_SPOTIFY=false
+      ;;
+  esac
+  log "ENABLE_SPOTIFY=${ENABLE_SPOTIFY}"
+}
+
 _option_samba() {
   # ENABLE_SAMBA
   clear_c
@@ -361,6 +386,7 @@ _run_customize_options() {
   _option_disable_onboard_audio
   _option_mpd
   _option_rfid_reader
+  _option_spotify
   _option_samba
   _option_webapp
   if [[ $ENABLE_WEBAPP == true ]] ; then

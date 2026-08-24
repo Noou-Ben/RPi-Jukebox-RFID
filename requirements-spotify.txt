@@ -1,0 +1,18 @@
+# Spotify related requirements
+#
+# Unlike v2's "+Spotify Edition" (Mopidy + Mopidy-Spotify + libspotify), v3's Spotify
+# support is implemented against `go-librespot` (https://github.com/devgianlu/go-librespot),
+# an actively maintained, self-contained Go binary that exposes a local REST API for
+# playback control. See src/jukebox/components/player/backends/spotify.py for the full
+# rationale.
+#
+# Because control happens over that local REST API, no additional Python packages are
+# required beyond what is already in requirements.txt (`requests`).
+#
+# The actual runtime dependency is the `go-librespot` binary itself, which is not a pip
+# package. It is installed by `installation/routines/setup_spotify.sh` when Spotify
+# support is opted into during setup (or can be installed/updated manually - see that
+# script and https://github.com/devgianlu/go-librespot/releases).
+#
+# This file is intentionally left without pip packages; it exists to mirror v2's
+# requirements-spotify.txt naming/discoverability and to document the dependency above.

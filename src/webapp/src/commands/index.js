@@ -296,6 +296,21 @@ const commands = {
     argKeys: ['settings'],
   },
 
+  // Spotify
+  getSpotifyStatus: {
+    _package: 'spotify',
+    plugin: 'ctrl',
+    method: 'get_connection_status',
+  },
+  enableSpotify: {
+    _package: 'spotify',
+    plugin: 'enable',
+  },
+  disableSpotify: {
+    _package: 'spotify',
+    plugin: 'disable',
+  },
+
   // Synchronisation
   'sync_rfidcards_all': {
     _package: 'sync_rfidcards',
@@ -307,6 +322,14 @@ const commands = {
     plugin: 'ctrl',
     method: 'sync_change_on_rfid_scan',
     argKeys: ['option']
+  },
+
+  // YouTube
+  youtube_download: {
+    _package: 'youtube',
+    plugin: 'ctrl',
+    method: 'download',
+    argKeys: ['url', 'folder'],
   },
 };
 
