@@ -35,12 +35,31 @@ straight onto the Pi as normal - no stacking header in the signal path.
 2. Wire the RC522, encoder, and buttons to those pins per the tables below.
 3. Plug the Bonnet directly onto the Pi's 40-pin GPIO header as normal.
 
+### Power cluster
+
+3.3V and GND are **not** part of the labelled signal row above - they're a
+separate group elsewhere on the Bonnet, with three holes each:
+
+| Power pin | Goes to |
+|---|---|
+| 3V #1 | RC522 |
+| 3V #2 | Rotary encoder |
+| 3V #3 | *(spare)* |
+| GND #1 | RC522 |
+| GND #2 | Rotary encoder |
+| GND #3 | Both buttons, via a small splitter cable (two wires into one hole) |
+
+Three dedicated holes each means RC522 and the encoder don't need to share
+or piggyback a wire - each gets its own. Only the two buttons, which don't
+draw power and just need a path to ground, share a single GND hole between
+them.
+
 ### RC522 (SPI)
 
 | RC522 pin | Bonnet hole | Note |
 |---|---|---|
-| 3.3V | `3V` | |
-| GND | `GND` | |
+| 3.3V | `3V #1` | see power cluster above |
+| GND | `GND #1` | see power cluster above |
 | SCK | `CLK` | RC522 calls it SCK, the Bonnet labels it CLK - same signal |
 | MOSI | `MOSI` | |
 | MISO | `MISO` | |
@@ -55,8 +74,8 @@ straight onto the Pi as normal - no stacking header in the signal path.
 | CLK | `5` |
 | DT | `6` |
 | SW | `13` |
-| GND | `GND` |
-| + | `3V` |
+| GND | `GND #2` |
+| + | `3V #2` |
 
 If clockwise/counter-clockwise ever comes out backwards, swap the CLK/DT
 wires (or swap `a`/`b` in `configs/gpio.yaml`) - harmless either way.
@@ -67,17 +86,12 @@ wires (or swap `a`/`b` in `configs/gpio.yaml`) - harmless either way.
 |---|---|
 | Prev (one leg) | `12` |
 | Next (one leg) | `20` |
-| Both (other leg) | any `GND` hole |
+| Both (other leg) | `GND #3`, via splitter |
 
 **Do not use GPIO16** for anything - it's the Bonnet's own amplifier
 shutdown/enable line (`sdmode` in the kernel's GPIO consumer list), driven
 by the sound driver itself. Wiring anything else there will either fail
 outright ("GPIO busy") or interfere with the amp being enabled.
-
-GND is a single shared rail - every GND pin on the header (and this
-breakout row) is the same electrical point. If you run out of nearby GND
-holes, twist multiple ground wires together into one bundle and solder that
-bundle into a single hole, rather than trying to find one hole per device.
 
 ## Software setup
 
