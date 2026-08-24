@@ -104,14 +104,18 @@ outright ("GPIO busy") or interfere with the amp being enabled.
    (If the installer complains about no pre-built Web App bundle: it needs a
    GitHub Actions run on `release/v3-custom` to have completed at least once
    on this fork - check the Actions tab.)
-3. Once the install finishes and the Jukebox is running:
+3. Once the install finishes and the Jukebox is running, wire the hardware
+   per the tables above, then run the one script that does everything else -
+   enables the Speaker Bonnet's sound driver and SPI, installs the RC522's
+   Python dependency, drops in `gpio.yaml`/`rfid.yaml`, patches `jukebox.yaml`
+   and `mpd.conf`, and reboots automatically at the end (it needs to, for the
+   sound driver and SPI to actually activate):
    ```bash
    cd ~/RPi-Jukebox-RFID
    ./custom-build/apply-custom-setup.sh
-   sudo reboot
    ```
-4. After reboot, confirm playback, volume, RFID, and all four GPIO controls
-   work before closing up the enclosure.
+4. After it reboots, confirm playback, volume, RFID, and all four GPIO
+   controls work before closing up the enclosure.
 
 ## Why things are configured the way they are
 

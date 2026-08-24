@@ -23,24 +23,43 @@ if [[ ! -d "${SETTINGS_DIR}" ]]; then
     exit 1
 fi
 
-# --- 1. Enable SPI (needed for the RC522) ---------------------------------
-echo "-- Enabling SPI in ${BOOT_CONFIG}"
-if grep -q '^dtparam=spi=on' "${BOOT_CONFIG}" 2>/dev/null; then
+# --- 1. Enable the Speaker Bonnet's I2S sound driver -----------------------
+# Not part of the Jukebox software itself - this is the kernel-level overlay
+# Adafruit's own setup calls for. Needs a reboot to take effect, same as SPI
+# below, so both changes share the single reboot at the end of this script.
+echo "-- Enabling the Speaker Bonnet's I2S driver in ${BOOT_CONFIG}"
+if grep -q '^dtoverlay=googlevoicehat-soundcard' "${BOOT_CONFIG}" 2>/dev/null; then
     echo "   already enabled"
-elif grep -q '^#dtparam=spi=on' "${BOOT_CONFIG}" 2>/dev/null; then
-    sudo sed -i 's/^#dtparam=spi=on/dtparam=spi=on/' "${BOOT_CONFIG}"
-    echo "   enabled (reboot required)"
 else
-    echo "dtparam=spi=on" | sudo tee -a "${BOOT_CONFIG}" >/dev/null
+    echo "dtoverlay=googlevoicehat-soundcard" | sudo tee -a "${BOOT_CONFIG}" >/dev/null
     echo "   added (reboot required)"
 fi
 
-# --- 2. Drop in the RFID reader and GPIO input device configs -------------
+# --- 2. Enable SPI (needed for the RC522) ----------------------------------
+# Uses the same non-interactive raspi-config call the RC522 reader module's
+# own setup.inc.sh uses, rather than editing config.txt by hand, so this
+# keeps working even if a future OS release changes exactly how SPI gets
+# turned on.
+echo "-- Enabling SPI"
+sudo raspi-config nonint do_spi 0
+echo "   done (reboot required if this was the first time)"
+
+# --- 3. Install the RC522's Python dependency ------------------------------
+# The reader module's own requirements.txt pins a specific pi-rc522-gpiozero
+# commit (this is what actually provides the 'pirc522' package) - install
+# from that file directly rather than hardcoding the package here, so this
+# stays in sync automatically if the project ever changes it.
+echo "-- Installing RC522 Python dependencies"
+"${REPO_ROOT}/.venv/bin/pip" install --upgrade --force-reinstall -q \
+    -r "${REPO_ROOT}/src/jukebox/components/rfid/hardware/rc522_spi/requirements.txt"
+echo "   done"
+
+# --- 4. Drop in the RFID reader and GPIO input device configs -------------
 echo "-- Installing rfid.yaml and gpio.yaml"
 cp "${REPO_ROOT}/custom-build/configs/rfid.yaml" "${SETTINGS_DIR}/rfid.yaml"
 cp "${REPO_ROOT}/custom-build/configs/gpio.yaml" "${SETTINGS_DIR}/gpio.yaml"
 
-# --- 3. Patch jukebox.yaml: enable gpioz, enable the volume bridge --------
+# --- 5. Patch jukebox.yaml: enable gpioz, enable the volume bridge --------
 echo "-- Patching jukebox.yaml (gpioz.enable, volume.bridge_to_player_volume)"
 python3 - "${SETTINGS_DIR}/jukebox.yaml" << 'PYEOF'
 import sys
@@ -54,7 +73,7 @@ with open(path) as f:
 
 data.setdefault('gpioz', {})
 data['gpioz']['enable'] = True
-data['gpioz'].setdefault('config_file', '../../shared/settings/gpio.yaml')
+data['gpioz']['config_file'] = '../../shared/settings/gpio.yaml'
 
 data.setdefault('volume', {})
 data['volume']['bridge_to_player_volume'] = True
@@ -65,7 +84,7 @@ with open(path, 'w') as f:
 print("   jukebox.yaml patched")
 PYEOF
 
-# --- 4. Patch mpd.conf: type "pulse" + mixer_type "software" --------------
+# --- 6. Patch mpd.conf: type "pulse" + mixer_type "software" --------------
 # Keeping type "pulse" (not switching to raw ALSA) preserves PipeWire's mute
 # and output-switching behaviour. mixer_type "software" is required because
 # this specific DAC accepts PipeWire volume changes but never actually
@@ -104,4 +123,6 @@ print("   mpd.conf patched")
 PYEOF
 
 echo ""
-echo "== Done. Reboot for the SPI change to take effect: sudo reboot =="
+echo "== Done. Rebooting in 10s to activate the sound driver and SPI (Ctrl+C to cancel) =="
+sleep 10
+sudo reboot
