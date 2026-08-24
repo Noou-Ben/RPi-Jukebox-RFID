@@ -61,7 +61,7 @@ cp "${REPO_ROOT}/custom-build/configs/gpio.yaml" "${SETTINGS_DIR}/gpio.yaml"
 
 # --- 5. Patch jukebox.yaml: enable gpioz, enable the volume bridge --------
 echo "-- Patching jukebox.yaml (gpioz.enable, volume.bridge_to_player_volume)"
-python3 - "${SETTINGS_DIR}/jukebox.yaml" << 'PYEOF'
+"${REPO_ROOT}/.venv/bin/python3" - "${SETTINGS_DIR}/jukebox.yaml" << 'PYEOF'
 import sys
 import ruamel.yaml
 
@@ -94,7 +94,7 @@ if [[ ! -f "${MPD_CONF}" ]]; then
     echo "ERROR: ${MPD_CONF} not found. Has MPD been set up yet?" >&2
     exit 1
 fi
-python3 - "${MPD_CONF}" << 'PYEOF'
+"${REPO_ROOT}/.venv/bin/python3" - "${MPD_CONF}" << 'PYEOF'
 import re
 import sys
 
