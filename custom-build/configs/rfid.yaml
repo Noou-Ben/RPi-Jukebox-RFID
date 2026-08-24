@@ -20,7 +20,17 @@ rfid:
         # default) is what actually works reliably on this hardware.
         antenna_gain: 4
         log_all_cards: false
-      same_id_delay: 1.0
+      # In polling mode (no IRQ), a card that's still sitting on the reader can
+      # genuinely fail to read for a couple of seconds at a stretch - normal RC522
+      # flakiness, not a removal. same_id_delay is how long a *continuous* run of
+      # failed reads has to last before the same card re-appearing counts as a
+      # fresh placement rather than the same one still there (see the reader-side
+      # fix in src/jukebox/components/rfid/reader/__init__.py for the "continuous"
+      # part). 1.0s (the library default) was too short on this hardware - it
+      # still reset mid-playlist on longer sessions. 8s comfortably exceeds any
+      # dropout seen in testing, while still being short enough that a genuine
+      # swap-the-figure-for-a-different-one reads as intentional.
+      same_id_delay: 8.0
       log_ignored_cards: false
       place_not_swipe:
         enabled: false
