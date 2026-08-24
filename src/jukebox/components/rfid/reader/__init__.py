@@ -145,7 +145,12 @@ class ReaderRunner(threading.Thread):
         # Previous ID is only stored to prevent repetitive triggers of the same card in case of place-not-swipe scenarios
         # For command card there is an exception (see below)
         previous_id = ''
-        previous_time = time.time()
+        # Tracks when we first stopped successfully reading `previous_id` (None while it's still
+        # being read successfully, or before anything has been read yet). This must reflect genuine
+        # absence, not "time since last successful read" - a run of failed polls while the same card
+        # is still sitting on the reader is normal RC522 polling-mode flakiness, not a removal, and
+        # must not let the next successful read look like a fresh re-placement of the card.
+        absent_since = None
         # This parameter is only relevant for the place-not-swipe case:
         # We need to store if the last action was a valid action, which triggers the timer for the remove action
         # So we can decide when a card id comes in, if the timer has to be reset or not without decoding the cards action
@@ -170,7 +175,12 @@ class ReaderRunner(threading.Thread):
                     # validity state needs to be saved in valid_for_removal_action
                     if valid_for_removal_action and self._timer_thread is not None and card_id == previous_id:
                         self._timer_thread.trigger.set()
-                    if card_id != previous_id or (time.time() - previous_time) >= self._cfg_same_id_delay:
+                    is_same_card_confirmed_absent = (
+                        card_id == previous_id
+                        and absent_since is not None
+                        and (time.time() - absent_since) >= self._cfg_same_id_delay
+                    )
+                    if card_id != previous_id or is_same_card_confirmed_absent:
                         # (2) Log this: do this first to provide log entry in case something does not run through
                         self._logger.info(f"Received card id = '{card_id}'")
 
@@ -225,10 +235,15 @@ class ReaderRunner(threading.Thread):
                             self.publisher.send(self.topic, card_id)
                     elif self._cfg_log_ignored_cards is True:
                         self._logger.debug(f"'Ignoring card id {card_id} due to same-card-delay ({self._cfg_same_id_delay}s)")
-                    previous_time = time.time()
+                    # A successful read of the current card means it wasn't actually removed - cancel
+                    # any absence clock a preceding run of failed polls may have started.
+                    absent_since = None
                 else:
-                    # Time-out for reader internal error resulting in empty string: to be ignored
-                    pass
+                    # Empty read: either no card present, or (commonly, in polling mode) a momentary
+                    # misread of a card that's still physically on the reader. Only start the absence
+                    # clock if one isn't already running.
+                    if previous_id and absent_since is None:
+                        absent_since = time.time()
                 # Slow down the card reading while loop in case card is placed permanently on reader
                 self._cancel.wait(timeout=0.2)
                 if self._timer_thread is not None:
