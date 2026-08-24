@@ -1,0 +1,28 @@
+rfid:
+  readers:
+    read_00:
+      module: rc522_spi
+      config:
+        spi_bus: 0
+        spi_ce: 0
+        # No IRQ wire is run for this build: polling mode. Higher CPU use, but one
+        # fewer wire, and fine for a single reader with no latency requirements.
+        pin_irq: 0
+        # RST is NOT wired to a GPIO pin on this build - the RC522's own RST pin is
+        # jumpered straight to its own 3.3V pin, tying it permanently high. pin_rst
+        # must still be a real, non-zero GPIO number here even though it's unwired,
+        # because the pirc522 library crashes on pin_rst=0 (treats it as "no pin
+        # given" rather than "disabled") - see custom-build/README.md.
+        pin_rst: 25
+        mode_legacy: false
+        # Do not raise this. Gain 7 (max) caused near-total detection failure in
+        # testing - likely receiver saturation at close range. 4 (the library
+        # default) is what actually works reliably on this hardware.
+        antenna_gain: 4
+        log_all_cards: false
+      same_id_delay: 1.0
+      log_ignored_cards: false
+      place_not_swipe:
+        enabled: false
+        card_removal_action:
+          alias: pause
