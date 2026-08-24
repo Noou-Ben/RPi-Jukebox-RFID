@@ -5,10 +5,12 @@ import PlayerContext from '../../context/player/context';
 
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import { useTheme } from '@mui/material/styles';
 
 const Display = () => {
   const { t } = useTranslation();
   const { state: { playerstatus } } = useContext(PlayerContext);
+  const theme = useTheme();
 
   const dontBreak = {
     whiteSpace: 'nowrap',
@@ -17,9 +19,16 @@ const Display = () => {
     textOverflow: 'ellipsis',
   };
 
+  const titleStyle = {
+    ...dontBreak,
+    fontFamily: theme.typography.fontFamilyDisplay,
+    fontStyle: 'italic',
+    fontWeight: 600,
+  };
+
   return (
     <Grid container>
-      <Typography sx={dontBreak} component="h5" variant="h5">
+      <Typography sx={titleStyle} component="h5" variant="h5">
         {playerstatus?.songid
           ? (playerstatus?.title || t('player.display.unknown-title'))
           : t('player.display.no-song-in-queue')

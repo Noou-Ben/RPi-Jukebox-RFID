@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
-import PlayCircleFilledRoundedIcon from '@mui/icons-material/PlayCircleFilledRounded';
-import PauseCircleFilledRoundedIcon from '@mui/icons-material/PauseCircleFilledRounded';
+import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded';
+import PauseRoundedIcon from '@mui/icons-material/PauseRounded';
 import SkipPreviousRoundedIcon from '@mui/icons-material/SkipPreviousRounded';
 import SkipNextRoundedIcon from '@mui/icons-material/SkipNextRounded';
 import ShuffleRoundedIcon from '@mui/icons-material/ShuffleRounded';
@@ -51,6 +51,14 @@ const Controls = () => {
   }, [playerstatus, setState]);
 
   const iconStyles = { padding: '7px' };
+  const playPauseStyles = {
+    width: 72,
+    height: 72,
+    backgroundColor: 'primary.main',
+    color: 'primary.contrastText',
+    '&:hover': { backgroundColor: 'primary.dark' },
+    '&.Mui-disabled': { backgroundColor: 'action.disabledBackground' },
+  };
 
   const labelShuffle = () => (
     isShuffle
@@ -105,10 +113,10 @@ const Controls = () => {
           onClick={() => request('play')}
           disabled={!songIsScheduled}
           size="large"
-          sx={iconStyles}
+          sx={playPauseStyles}
           title={t('player.controls.play')}
         >
-          <PlayCircleFilledRoundedIcon style={{ fontSize: 75 }} />
+          <PlayArrowRoundedIcon style={{ fontSize: 36 }} />
         </IconButton>
       }
       {/* Pause */}
@@ -117,10 +125,10 @@ const Controls = () => {
           aria-label={t('player.controls.pause')}
           onClick={() => request('pause')}
           size="large"
-          sx={iconStyles}
+          sx={playPauseStyles}
           title={t('player.controls.pause')}
         >
-          <PauseCircleFilledRoundedIcon style={{ fontSize: 75 }} />
+          <PauseRoundedIcon style={{ fontSize: 36 }} />
         </IconButton>
       }
 
