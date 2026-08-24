@@ -25,13 +25,23 @@ fi
 
 # --- 1. Enable the Speaker Bonnet's I2S sound driver -----------------------
 # Not part of the Jukebox software itself - this is the kernel-level overlay
-# Adafruit's own setup calls for. Needs a reboot to take effect, same as SPI
-# below, so both changes share the single reboot at the end of this script.
+# Adafruit's own setup calls for (see their Speaker Bonnet guide). Needs a
+# reboot to take effect, same as SPI below, so both changes share the single
+# reboot at the end of this script.
+#
+# sdmode-pin=16 is required: the max98357a overlay defaults to managing
+# GPIO4 as the amp's SD_MODE (enable) pin, but this board's SD_MODE line is
+# actually wired to GPIO16. Without this parameter the overlay drives the
+# wrong pin, GPIO16 is never enabled, and the amp stays in permanent
+# shutdown - audio plays with zero errors anywhere in the stack, and is
+# simply silent. Confirmed by reading GPIO16's live state mid-playback
+# (`cat /sys/kernel/debug/gpio`) - it only reaches HIGH with this parameter.
 echo "-- Enabling the Speaker Bonnet's I2S driver in ${BOOT_CONFIG}"
-if grep -q '^dtoverlay=googlevoicehat-soundcard' "${BOOT_CONFIG}" 2>/dev/null; then
+if grep -q '^dtoverlay=max98357a,sdmode-pin=16' "${BOOT_CONFIG}" 2>/dev/null; then
     echo "   already enabled"
 else
-    echo "dtoverlay=googlevoicehat-soundcard" | sudo tee -a "${BOOT_CONFIG}" >/dev/null
+    sudo sed -i '/^dtoverlay=googlevoicehat-soundcard$/d' "${BOOT_CONFIG}"
+    echo "dtoverlay=max98357a,sdmode-pin=16" | sudo tee -a "${BOOT_CONFIG}" >/dev/null
     echo "   added (reboot required)"
 fi
 
