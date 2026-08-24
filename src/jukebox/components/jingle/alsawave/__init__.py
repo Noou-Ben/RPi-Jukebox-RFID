@@ -3,6 +3,7 @@ ALSA wave jingle Service for jingle.JingleFactory
 """
 import alsaaudio
 import logging
+import time
 import wave
 import os
 import jukebox.cfghandler
@@ -42,6 +43,15 @@ class AlsaWave:
             while data:
                 device.write(data)
                 data = f.readframes(period_size)
+
+            # device.write() only blocks until data is accepted into ALSA's
+            # ring buffer, not until it has actually reached the speaker.
+            # Closing/discarding the device right after the last write() can
+            # drop whatever is still buffered instead of playing it out -
+            # audible as a truncated click, or total silence if none of it
+            # had reached the hardware yet. Give it time to drain first.
+            time.sleep(0.6)
+            device.close()
 
     @plugin.tag
     def play(self, filename):
