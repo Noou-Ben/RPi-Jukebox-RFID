@@ -16,6 +16,7 @@
         "placeholder": "Wähle einen Befehl aus",
         "commands": {
           "change_volume": "Lautstärke anpassen",
+          "set_volume": "Lautstärke einstellen auf",
           "shutdown": "Herunterfahren",
           "reboot": "Neustarten",
           "say_my_ip": "IP Addresse vorlesen",
@@ -87,6 +88,9 @@
           },
           "volume": {
             "title": "Lautstärke Stufen"
+          },
+          "set-volume": {
+            "title": "Lautstärke"
           }
         },
         "timers": {

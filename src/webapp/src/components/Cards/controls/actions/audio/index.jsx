@@ -1,6 +1,7 @@
 
 import CommandSelector from '../../command-selector';
 import SliderChangeVolume from './slider-change-volume';
+import SliderSetVolume from './slider-set-volume';
 import OptionsSelector from '../../options-selector';
 
 import { getActionAndCommand } from '../../../utils';
@@ -19,6 +20,12 @@ const SelectAudioVolume = ({
       />
       {command === 'change_volume' &&
         <SliderChangeVolume
+          actionData={actionData}
+          handleActionDataChange={handleActionDataChange}
+        />
+      }
+      {command === 'set_volume' &&
+        <SliderSetVolume
           actionData={actionData}
           handleActionDataChange={handleActionDataChange}
         />
