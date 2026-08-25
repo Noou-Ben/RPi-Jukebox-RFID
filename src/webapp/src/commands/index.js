@@ -153,6 +153,12 @@ const commands = {
     method: 'change_volume',
     argKeys: ['step'],
   },
+  set_volume: {
+    _package: 'volume',
+    plugin: 'ctrl',
+    method: 'set_volume',
+    argKeys: ['volume'],
+  },
   toggleMuteVolume: {
     _package: 'volume',
     plugin: 'ctrl',

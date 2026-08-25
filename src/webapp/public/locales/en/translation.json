@@ -16,6 +16,7 @@
         "placeholder": "Select a command",
         "commands": {
           "change_volume": "Change volume by",
+          "set_volume": "Set volume to",
           "shutdown": "Shut Down",
           "reboot": "Reboot",
           "say_my_ip": "Say IP address",
@@ -87,6 +88,9 @@
           },
           "volume": {
             "title": "Volume steps"
+          },
+          "set-volume": {
+            "title": "Volume level"
           }
         },
         "timers": {
