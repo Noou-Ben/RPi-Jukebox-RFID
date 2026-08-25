@@ -41,6 +41,7 @@ const JUKEBOX_ACTIONS_MAP = {
   audio: {
     commands: {
       change_volume: {},
+      set_volume: {},
       toggle_output: {},
       play: {},
       pause: {},
