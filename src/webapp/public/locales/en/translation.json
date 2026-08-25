@@ -37,6 +37,11 @@
       "controls-selector": {
         "label": "Jukebox action"
       },
+      "additional-actions": {
+        "label": "Also do this when the card is scanned",
+        "add": "Add another action",
+        "remove": "Remove action"
+      },
       "select-command-aliases": {
         "label": "Actions",
         "placeholder": "Select an action",

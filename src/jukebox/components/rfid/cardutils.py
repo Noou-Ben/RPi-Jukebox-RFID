@@ -21,6 +21,11 @@ def decode_card_command(cfg_rpc_cmd: Mapping, logger: logging.Logger = log):
         action['ignore_same_id_delay'] = cfg_rpc_cmd['ignore_same_id_delay']
     if 'ignore_card_removal_action' in cfg_rpc_cmd:
         action['ignore_card_removal_action'] = cfg_rpc_cmd['ignore_card_removal_action']
+    if 'post_actions' in cfg_rpc_cmd:
+        # Additional RPC calls to run right after the main action (e.g. a play_folder
+        # card that should also enable shuffle) - same alias-or-raw shape as the main
+        # command, decoded the same way, just run in sequence after it.
+        action['post_actions'] = [utils.decode_rpc_command(post, logger) for post in cfg_rpc_cmd['post_actions']]
     return action
 
 

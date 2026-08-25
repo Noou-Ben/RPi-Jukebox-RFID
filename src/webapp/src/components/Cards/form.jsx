@@ -13,6 +13,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import Header from '../Header';
 import ActionsControls from './controls/actions-controls';
 import ControlsSelector from './controls/controls-selector';
+import AdditionalActions from './controls/additional-actions';
 
 const InfoNoCardSwiped = () => {
   const { t } = useTranslation();
@@ -60,6 +61,10 @@ const CardsForm = ({
                       cardId={cardId}
                     />
                   </Grid>
+                  <AdditionalActions
+                    actionData={actionData}
+                    setActionData={setActionData}
+                  />
                   <ActionsControls
                     actionData={actionData}
                     cardId={cardId}
