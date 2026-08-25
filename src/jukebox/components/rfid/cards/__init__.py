@@ -42,6 +42,11 @@ def list_cards():
     with cfg_cards:
         for card_id, card_action in cfg_cards.items():
             action = decode_card_command(card_action)
+            for post_action, raw_post_action in zip(action.get('post_actions', []),
+                                                     card_action.get('post_actions', [])):
+                post_alias = raw_post_action.get('alias', None)
+                if post_alias is not None:
+                    post_action['from_alias'] = post_alias
 
             try:
                 func = plugs.get(action['package'], action['plugin'], action.get('method', None))
@@ -90,6 +95,7 @@ def delete_card(card_id: str, auto_save: bool = True):
 @plugs.register
 def register_card(card_id: str, cmd_alias: str,
                   args: Optional[List] = None, kwargs: Optional[Dict] = None,
+                  post_actions: Optional[List] = None,
                   ignore_card_removal_action: Optional[bool] = None, ignore_same_id_delay: Optional[bool] = None,
                   overwrite: bool = False,
                   auto_save: bool = True):
@@ -118,7 +124,9 @@ def register_card(card_id: str, cmd_alias: str,
         if args is not None:
             cfg_cards[card_id]['args'] = args
         if kwargs is not None:
-            cfg_cards[card_id]['kwargs'] = args
+            cfg_cards[card_id]['kwargs'] = kwargs
+        if post_actions is not None:
+            cfg_cards[card_id]['post_actions'] = post_actions
         if ignore_same_id_delay is not None:
             cfg_cards[card_id]['ignore_same_id_delay'] = ignore_same_id_delay
         if ignore_card_removal_action is not None:

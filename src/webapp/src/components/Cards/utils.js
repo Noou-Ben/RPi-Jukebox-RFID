@@ -38,10 +38,11 @@ const getCommandArgKeys = (command) => {
   return argKeys;
 };
 
-const buildActionData = (action, command = {}, args = {}) => {
+const buildActionData = (action, command = {}, args = {}, extra = {}) => {
   const data = {
     action,
     command,
+    ...extra,
   };
 
   if (!isEmpty(command)) {

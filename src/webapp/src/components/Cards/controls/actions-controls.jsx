@@ -27,11 +27,24 @@ const ActionsControls = ({
     const args = getArgsValues(actionData);
     const { command: cmd_alias } = getActionAndCommand(actionData);
 
+    const postActions = (actionData.postActions || [])
+      .filter((row) => getActionAndCommand(row).command)
+      .map((row) => {
+        const { command: alias } = getActionAndCommand(row);
+        const rowArgs = getArgsValues(row);
+
+        return {
+          alias,
+          ...(rowArgs.length && { args: rowArgs }),
+        };
+      });
+
     const kwargs = {
       card_id: cardId.toString(),
       cmd_alias,
       overwrite: true,
       ...(args.length && { args }),
+      ...(postActions.length && { post_actions: postActions }),
     };
 
     const { error } = await request('registerCard', kwargs);
