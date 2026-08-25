@@ -228,6 +228,12 @@ class ReaderRunner(threading.Thread):
                                 rfid_card_detect_callbacks.run_callbacks(card_id, RfidCardDetectState.isRegistered)
                                 plugs.call_ignore_errors(card_action['package'], card_action['plugin'], card_action['method'],
                                                          args=card_action['args'], kwargs=card_action['kwargs'])
+                                # (7b) Run any additional actions configured for this card (e.g. a
+                                # play_folder card that should also enable shuffle) - same call
+                                # mechanism, just run in sequence right after the main action.
+                                for post_action in card_action.get('post_actions', []):
+                                    plugs.call_ignore_errors(post_action['package'], post_action['plugin'], post_action['method'],
+                                                             args=post_action['args'], kwargs=post_action['kwargs'])
 
                         else:
                             rfid_card_detect_callbacks.run_callbacks(card_id, RfidCardDetectState.isUnkown)

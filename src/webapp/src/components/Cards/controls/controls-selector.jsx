@@ -7,11 +7,8 @@ import {
 
 import SelectCommandAliases from './select-command-aliases';
 import SelectPlayMusic from './actions/play-music';
-import SelectTimers from './actions/timers';
-import SelectAudio from './actions/audio';
+import ActionTypeFields from './action-type-fields';
 import { buildActionData } from '../utils';
-import SelectHost from './actions/host';
-import SelectSynchronisation from './actions/synchronisation';
 
 const ControlsSelector = ({
   actionData,
@@ -54,13 +51,6 @@ const ControlsSelector = ({
           marginTop: '20px',
         }}
       >
-        {actionData.action === 'host' &&
-          <SelectHost
-          actionData={actionData}
-          handleActionDataChange={handleActionDataChange}
-          />
-        }
-
         {actionData.action === 'play_music' &&
           <SelectPlayMusic
             actionData={actionData}
@@ -68,22 +58,8 @@ const ControlsSelector = ({
           />
         }
 
-        {actionData.action === 'timers' &&
-          <SelectTimers
-            actionData={actionData}
-            handleActionDataChange={handleActionDataChange}
-          />
-        }
-
-        {actionData.action === 'audio' &&
-          <SelectAudio
-            actionData={actionData}
-            handleActionDataChange={handleActionDataChange}
-          />
-        }
-
-        {actionData.action === 'synchronisation' &&
-          <SelectSynchronisation
+        {actionData.action !== 'play_music' &&
+          <ActionTypeFields
             actionData={actionData}
             handleActionDataChange={handleActionDataChange}
           />

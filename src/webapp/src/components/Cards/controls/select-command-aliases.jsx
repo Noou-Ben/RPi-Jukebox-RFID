@@ -11,12 +11,14 @@ import { getActionAndCommand } from '../utils';
 
 const SelectCommandAliases = ({
   actionData,
-  handleActionChange
+  handleActionChange,
+  excludeActions = [],
 }) => {
   const { t } = useTranslation();
 
   const { action = {} } = getActionAndCommand(actionData);
-  const actionsList = Object.keys(JUKEBOX_ACTIONS_MAP);
+  const actionsList = Object.keys(JUKEBOX_ACTIONS_MAP)
+    .filter((action) => !excludeActions.includes(action));
   const value = isEmpty(action) ? 0 : action;
 
   return (

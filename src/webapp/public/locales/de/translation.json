@@ -37,6 +37,11 @@
       "controls-selector": {
         "label": "Jukebox Aktion"
       },
+      "additional-actions": {
+        "label": "Zusätzlich ausführen, wenn die Karte gescannt wird",
+        "add": "Weitere Aktion hinzufügen",
+        "remove": "Aktion entfernen"
+      },
       "select-command-aliases": {
         "label": "Aktionen",
         "placeholder": "Wähle eine Aktion aus",

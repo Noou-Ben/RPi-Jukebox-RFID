@@ -21,12 +21,16 @@ const CardsEdit = () => {
 
         if (result && result[cardId]) {
           const {
-            action: { args },
+            action: { args, post_actions = [] },
             from_alias: command
           } = result[cardId];
 
           const action = findActionByCommand(command);
-          const actionData = buildActionData(action, command, args);
+          const postActions = post_actions.map(({ from_alias, args }) => {
+            const postAction = findActionByCommand(from_alias);
+            return buildActionData(postAction, from_alias, args || []);
+          });
+          const actionData = buildActionData(action, command, args, { postActions });
 
           setActionData(actionData);
         }
