@@ -337,6 +337,32 @@ const commands = {
     method: 'download',
     argKeys: ['url', 'folder'],
   },
+
+  // Jukebox Hub
+  jukebox_hub_list_playlists: {
+    _package: 'jukebox_hub',
+    plugin: 'ctrl',
+    method: 'list_playlists',
+    argKeys: [],
+  },
+  jukebox_hub_download_playlist: {
+    _package: 'jukebox_hub',
+    plugin: 'ctrl',
+    method: 'download_playlist',
+    argKeys: ['playlist_id', 'folder'],
+  },
+  getJukeboxHubStatus: {
+    _package: 'jukebox_hub',
+    plugin: 'ctrl',
+    method: 'get_status',
+    argKeys: [],
+  },
+  setJukeboxHubConfig: {
+    _package: 'jukebox_hub',
+    plugin: 'ctrl',
+    method: 'set_config',
+    argKeys: ['enable', 'url', 'api_key'],
+  },
 };
 
 export default commands;
