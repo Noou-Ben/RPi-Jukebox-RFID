@@ -17,6 +17,7 @@ import { listLibraryEntries } from '../../../../utils/library-api';
 import CreateFolderDialog from './create-folder-dialog';
 import DeleteEntriesDialog from './delete-entries-dialog';
 import FolderList from "./folder-list";
+import JukeboxHubDialog from './jukebox-hub-dialog';
 import LibraryActions from './library-actions';
 import MoveEntriesDialog from './move-entries-dialog';
 import RenameEntryDialog from './rename-entry-dialog';
@@ -52,6 +53,7 @@ const Folders = ({
   const [uploadSelection, setUploadSelection] = useState(emptyUploadSelection);
   const [isDragging, setIsDragging] = useState(false);
   const [youtubeDialogOpen, setYoutubeDialogOpen] = useState(false);
+  const [jukeboxHubDialogOpen, setJukeboxHubDialogOpen] = useState(false);
   const currentFolder = decodeURIComponent(dir);
 
   const search = ({ name }) => {
@@ -200,6 +202,7 @@ const Folders = ({
           onCancelSelection={cancelSelection}
           onCreateFolder={() => setCreateDialogOpen(true)}
           onDeleteSelected={deleteSelected}
+          onDownloadJukeboxHub={() => setJukeboxHubDialogOpen(true)}
           onDownloadYoutube={() => setYoutubeDialogOpen(true)}
           onMoveSelected={moveSelected}
           onRenameSelected={renameSelected}
@@ -277,6 +280,13 @@ const Folders = ({
         onClose={() => setYoutubeDialogOpen(false)}
         onLibraryChanged={reloadFolder}
         open={youtubeDialogOpen}
+      />
+      <JukeboxHubDialog
+        folder={currentFolder}
+        onClose={() => setJukeboxHubDialogOpen(false)}
+        onLibraryChanged={reloadFolder}
+        open={jukeboxHubDialogOpen}
+        registerMusicToCard={registerMusicToCard}
       />
     </Box>
   );

@@ -21,6 +21,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 
@@ -38,6 +39,7 @@ const LibraryActions = ({
   onCancelSelection,
   onCreateFolder,
   onDeleteSelected,
+  onDownloadJukeboxHub,
   onDownloadYoutube,
   onMoveSelected,
   onRenameSelected,
@@ -159,6 +161,16 @@ const LibraryActions = ({
               >
                 <ListItemIcon><YouTubeIcon /></ListItemIcon>
                 <ListItemText>{t('library.folders.manager.download-youtube')}</ListItemText>
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  closeUploadMenu();
+                  onDownloadJukeboxHub();
+                }}
+                sx={{ minHeight: 44 }}
+              >
+                <ListItemIcon><CloudDownloadIcon /></ListItemIcon>
+                <ListItemText>{t('library.folders.manager.download-jukebox-hub')}</ListItemText>
               </MenuItem>
             </Menu>
             <input
