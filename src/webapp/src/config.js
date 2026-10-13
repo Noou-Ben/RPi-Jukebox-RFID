@@ -8,6 +8,7 @@ const SUBSCRIPTIONS = [
   'core.started_at',
   'host.timer.cputemp',
   'host.temperature.cpu',
+  'library.jukebox_hub.progress',
   'library.youtube.progress',
   'playerstatus',
   'rfid.card_id',

@@ -23,6 +23,7 @@ modules:
     gpio: gpio.gpioz.plugin
     sync_rfidcards: synchronisation.rfidcards
     youtube: youtube
+    jukebox_hub: jukebox_hub
   others:
   - misc
 pulse:
@@ -199,6 +200,12 @@ youtube:
   # Preferred audio codec for downloaded files, e.g. 'mp3', 'm4a', 'opus', 'vorbis', 'wav'
   audio_format: mp3
   # Requires the 'ffmpeg' binary to be installed on the system for audio extraction and conversion
+jukebox_hub:
+  enable: false
+  # Base URL of the Jukebox Hub server, e.g. 'https://jukebox.example.com'
+  url: ''
+  # API key sent as the 'X-Api-Key' header on every request to the Jukebox Hub server
+  api_key: ''
 webapp:
   coverart_cache_path: ../../src/webapp/build/cover-cache
   # Load cover arts in Webapp. Change to false in case you have performance issue

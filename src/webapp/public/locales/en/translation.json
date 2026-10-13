@@ -170,6 +170,7 @@
         "upload-files": "Upload files",
         "upload-folders": "Upload folders",
         "download-youtube": "Download from YouTube",
+        "download-jukebox-hub": "Download from Jukebox Hub",
         "create-folder": "New folder",
         "select": "Select",
         "select-item": "Select {{name}}",
@@ -232,6 +233,24 @@
             "preparing": "Fetching video information…",
             "downloading": "Downloading: {{percent}}%",
             "converting": "Converting audio…",
+            "complete": "Download complete"
+          }
+        },
+        "jukebox-hub-dialog": {
+          "title": "Download from Jukebox Hub",
+          "description": "Pick a playlist from your Jukebox Hub server. It will be downloaded into this folder.",
+          "confirm": "Download",
+          "try-again": "Try again",
+          "generic-error": "The Jukebox Hub download failed.",
+          "list-error": "Could not reach the Jukebox Hub server. Check the Jukebox Hub settings and try again.",
+          "list-empty": "No playlists were found on the Jukebox Hub server.",
+          "track-count_one": "{{count}} track",
+          "track-count_other": "{{count}} tracks",
+          "redirecting-to-card": "Opening card assignment for \"{{folder}}\"…",
+          "status": {
+            "submitting": "Starting download…",
+            "preparing": "Fetching playlist information…",
+            "downloading": "Downloading track {{current}} of {{total}}…",
             "complete": "Download complete"
           }
         },
@@ -429,6 +448,16 @@
     },
     "systemcontrols": {
       "title": "System Controls"
+    },
+    "jukebox-hub": {
+      "title": "Jukebox Hub",
+      "control-label": "Jukebox Hub",
+      "description": "Download playlists from your own Jukebox Hub server into the local library.",
+      "url-label": "Jukebox Hub URL",
+      "url-placeholder": "https://jukebox.example.com",
+      "api-key-label": "API key",
+      "save": "Save",
+      "saved": "Settings saved."
     }
   }
 }

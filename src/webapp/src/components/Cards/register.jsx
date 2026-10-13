@@ -26,6 +26,15 @@ const CardsRegister = () => {
     setCardId(swipedCardId || registerCard?.cardId);
   }, [registerCard, swipedCardId])
 
+  useEffect(() => {
+    // actionData is seeded from location state via useState's lazy initializer, which only
+    // runs on first mount - if this route is navigated to again while already mounted (e.g.
+    // from a dialog that stays on the page, like the Jukebox Hub download), that initial
+    // value never updates on its own. Re-sync explicitly whenever fresh state arrives, same
+    // as cardId above.
+    if (registerCard?.actionData) setActionData(registerCard.actionData);
+  }, [registerCard])
+
   return (
     <CardsForm
       title={t('cards.register.register-card')}
